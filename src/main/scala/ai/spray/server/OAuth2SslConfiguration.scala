@@ -1,10 +1,13 @@
 package ai.spray.server
 
 import java.security.{SecureRandom, KeyStore}
-import javax.net.ssl.{KeyManagerFactory, SSLContext, TrustManagerFactory}
-import spray.io._
+import javax.net.ssl.{TrustManagerFactory, KeyManagerFactory, SSLContext}
 
-// for SSL support (if enabled in application.conf)
+import spray.io.ServerSSLEngineProvider
+
+/**
+ * конфигурация ssl
+ */
 trait OAuth2SslConfiguration {
 
   // if there is no SSLContext in scope implicitly the HttpServer uses the default SSLContext,
