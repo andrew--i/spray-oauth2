@@ -5,12 +5,11 @@ import spray.http.HttpResponse
 import spray.routing.{HttpServiceActor, Route}
 
 
-
 /**
  * Created by Andrew on 06.08.2014.
  * Обработчик запросов
  */
-class OAuth2Service extends HttpServiceActor with PerRequestCreator{
+class OAuth2Service extends HttpServiceActor with PerRequestCreator {
 
   override def receive: Receive = runRoute(oauth2Route)
 
@@ -19,8 +18,7 @@ class OAuth2Service extends HttpServiceActor with PerRequestCreator{
     path("oauth" / "authorize") {
       get {
         parameterMap {
-          params =>
-            processRequestParams(params)
+          params => processRequestParams(params)
         }
       }
     } ~
@@ -34,7 +32,7 @@ class OAuth2Service extends HttpServiceActor with PerRequestCreator{
     complete(HttpResponse(entity = s"error $error"))
   }
 
-  def processRequestParams(message:Any):Route = {
+  def processRequestParams(message: Any): Route = {
     ctx => perRequest(ctx, Props(new AuthorizeServiceActor()), message);
   }
 
