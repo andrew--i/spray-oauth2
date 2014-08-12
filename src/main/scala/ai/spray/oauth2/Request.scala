@@ -5,6 +5,7 @@ package ai.spray.oauth2
  */
 object Request {
   trait BaseRequest
-  case class AuthorizationRequest() extends BaseRequest
+  case class AuthorizationGetRequest() extends BaseRequest
+  case class AuthorizationPostRequest() extends BaseRequest
 
 }
