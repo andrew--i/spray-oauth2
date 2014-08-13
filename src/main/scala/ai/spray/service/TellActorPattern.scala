@@ -30,7 +30,7 @@ trait TellActorPattern extends Actor with Json4sSupport {
   target ! message
 
   override def receive: Receive = {
-    case (x: AnyRef, status:StatusCode) => complete(status, x)
+    case x: AnyRef => complete(OK, x)
   }
 
   def complete[T <: AnyRef](status: StatusCode, obj: T) = {
