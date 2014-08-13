@@ -1,8 +1,7 @@
 package ai.spray.service
 
-import ai.spray.oauth2.Request.{AuthorizationPostRequest, AuthorizationGetRequest}
+import ai.spray.oauth2.Request.{AuthorizationGetRequest, AuthorizationPostRequest}
 import ai.spray.service.authorize.AuthorizeService
-import spray.http.HttpResponse
 import spray.routing.{HttpServiceActor, Route}
 
 
@@ -24,8 +23,4 @@ class OAuth2Service extends HttpServiceActor with AuthorizeService {
           authorizeClient(AuthorizationPostRequest())
         }
     }
-
-  def redirectToErrorPage(error: Throwable): Route = {
-    complete(HttpResponse(entity = s"error $error"))
-  }
 }
