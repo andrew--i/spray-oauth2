@@ -1,6 +1,6 @@
 package ai.spray.service.authorize
 
-import ai.spray.oauth2.Request.{AuthorizationGetRequest, AuthorizationPostRequest, BaseRequest}
+import ai.spray.oauth2.actor.message.RequestMessage.{AuthorizationGetRequestMessage, AuthorizationPostRequestMessage, BaseRequest}
 import ai.spray.service.PerRequestCreator
 import akka.actor.{Actor, Props}
 import spray.routing._
@@ -11,9 +11,10 @@ import spray.routing._
  */
 class AuthorizeServiceActor(requestContext: RequestContext) extends Actor {
   override def receive: Receive = {
-    case getRequest: AuthorizationGetRequest => context.parent ! requestContext.request.headers
-    case postRequest: AuthorizationPostRequest => throw new NotImplementedError("AuthorizationPostRequest не реализована обработка");
+    case getRequest: AuthorizationGetRequestMessage => context.parent ! "It`s works"
+    case postRequest: AuthorizationPostRequestMessage => throw new NotImplementedError("AuthorizationPostRequest не реализована обработка");
   }
+
 }
 
 trait AuthorizeService extends Actor with PerRequestCreator {

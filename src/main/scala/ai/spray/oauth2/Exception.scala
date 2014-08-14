@@ -5,4 +5,7 @@ package ai.spray.oauth2
  */
 object Exception {
 
+  trait OAuthException extends Exception
+
+  case class OAuthParseRequestException(message:String) extends OAuthException
 }
