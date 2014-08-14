@@ -9,6 +9,7 @@ import spray.http.HttpRequest
  * Created by Андрей Смирнов on 14.08.2014.
  */
 object OAuth2RequestFactory {
+
   def createAuthorizationRequest(request: HttpRequest): AuthorizationRequest = {
     require(request != null)
     val requestParams: Map[String, String] = createRequestParamsMap(request)
@@ -22,12 +23,31 @@ object OAuth2RequestFactory {
       case None => throw new OAuthParseRequestException(s"${Constants.REDIRECT_URI} parameter does not found")
     }
 
-    AuthorizationRequest(clientId, Set.empty, Map.empty, Map.empty, "state", Set.empty, Set.empty, Set.empty, approved = false, redirectUri, Map.empty)
+    val responseTypeList: String = requestParams.getOrElse(Constants.RESPONSE_TYPE, "")
+    val scopeList: String = requestParams.getOrElse(Constants.SCOPE, "")
+
+    AuthorizationRequest(
+      clientId,
+      parseParameterValues(scopeList),
+      Map.empty, Map.empty,
+      "",
+      parseParameterValues(responseTypeList),
+      Set.empty, Set.empty,
+      approved = false,
+      redirectUri, Map.empty)
   }
 
   def createRequestParamsMap(request: HttpRequest): Map[String, String] = {
     require(request != null)
     request.uri.query.toMap
+  }
+
+  def parseParameterValues(values: String): Set[String] = {
+    if (values == null || values.trim.size == 0)
+      Set.empty
+    else {
+      Set.empty ++ values.split("[\\s+]")
+    }
   }
 }
 
