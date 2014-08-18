@@ -1,7 +1,6 @@
 package ai.spray.oauth2.util
 
 import ai.spray.oauth2.Exception.OAuthParseRequestException
-import ai.spray.service.ClientDetailsService
 import org.specs2.mutable.Specification
 import spray.testkit.Specs2RouteTest
 
@@ -9,8 +8,6 @@ import spray.testkit.Specs2RouteTest
  * Created by Андрей Смирнов on 14.08.2014.
  */
 class OAuth2RequestFactoryTest extends Specification with Specs2RouteTest {
-
-  implicit val clientDetailsService:ClientDetailsService
 
   "The OAuth2RequestFactory when create authorization request" should {
     "raise exception when he works with null request " in {
