@@ -29,13 +29,10 @@ object Main {
     val future: Future[Any] = IO(Http) ? Http.Bind(interface = "localhost", port = 8080)
     future.onSuccess({
       case serverBinding: Http.ServerBinding =>
-        println("Server started, listening on: " + serverBinding.localAddress)
-        Flow(serverBinding.connectionStream).foreach(conn => {
+        Flow(serverBinding.connectionStream).foreach(conn =>
           Flow(conn.requestPublisher)
             .map(request => HttpResponse(status = StatusCodes.OK, entity = request.toString))
-            .produceTo(FlowMaterializer(MaterializerSettings()), conn.responseSubscriber)
-          println("Client connected from: " + conn.remoteAddress)
-        }
+            .produceTo(materializer, conn.responseSubscriber)
         ).consume(materializer)
     })
   }
