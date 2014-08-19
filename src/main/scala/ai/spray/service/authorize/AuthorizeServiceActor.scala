@@ -1,12 +1,9 @@
 package ai.spray.service.authorize
 
-import ai.spray.oauth2.Exception.RequestProcessException
 import ai.spray.oauth2.actor.message.RequestMessage.{AuthorizationGetRequestMessage, AuthorizationPostRequestMessage, BaseRequest}
+import ai.spray.service.OAuth2Service
 import akka.actor.{Actor, ActorRef, Props}
-import org.json4s.{DefaultFormats, Formats}
-import spray.http.{StatusCodes, StatusCode}
-import spray.httpx.Json4sSupport
-import spray.routing._
+import spray.http.StatusCodes
 
 /**
  * Created by Andrew on 10.08.2014.
@@ -24,18 +21,6 @@ class AuthorizeServiceActor() extends OAuth2Service {
 
 }
 
-trait OAuth2Service extends Actor with Json4sSupport {
-
-  override implicit def json4sFormats: Formats = DefaultFormats
-
-  def throw_(e: Throwable, ctx: RequestContext): Unit = {
-    throw new RequestProcessException(e, ctx)
-  }
-
-  def completeRequest[T <: AnyRef](request: BaseRequest, status: StatusCode, body: T): Unit = {
-    request.ctx.complete(status, body)
-  }
-}
 
 trait AuthorizeService extends Actor {
   val authorizeActor: ActorRef = context.actorOf(Props[AuthorizeServiceActor])

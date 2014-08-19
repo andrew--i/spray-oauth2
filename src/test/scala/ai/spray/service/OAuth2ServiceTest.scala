@@ -10,8 +10,8 @@ import spray.testkit.Specs2RouteTest
  */
 class OAuth2ServiceTest extends Specification with Specs2RouteTest {
 
-  val oauth2ServiceRef = TestActorRef[OAuth2Service]
-  val oauth2Service: OAuth2Service = oauth2ServiceRef.underlyingActor
+  val oauth2ServiceRef = TestActorRef[OAuth2ServiceActor]
+  val oauth2Service: OAuth2ServiceActor = oauth2ServiceRef.underlyingActor
 
   "The OAuth2Service service" should {
     "return empty response" in {

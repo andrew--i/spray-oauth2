@@ -1,6 +1,6 @@
 package ai.spray.server
 
-import ai.spray.service.OAuth2Service
+import ai.spray.service.OAuth2ServiceActor
 import akka.actor.{ActorSystem, Props}
 import akka.io.IO
 import spray.can.Http
@@ -13,6 +13,6 @@ object Main extends OAuth2SslConfiguration {
 
   def main(args: Array[String]) {
     implicit val system = ActorSystem("sprayOAuth2System")
-    IO(Http) ! Http.Bind(system.actorOf(Props[OAuth2Service]), interface = "localhost", port = 8080)
+    IO(Http) ! Http.Bind(system.actorOf(Props[OAuth2ServiceActor]), interface = "localhost", port = 8080)
   }
 }
