@@ -39,41 +39,24 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-library</artifactId>
-      <version>${scala.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.spray</groupId>
-      <artifactId>spray-can_2.11</artifactId>
-      <version>${spray.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>io.spray</groupId>
-      <artifactId>spray-routing_2.11</artifactId>
-      <version>${spray.version}</version>
-    </dependency>
-    <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-actor_2.11</artifactId>
       <version>${akka.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.json4s</groupId>
-      <artifactId>json4s-native_2.11</artifactId>
-      <version>${json4s.version}</version>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-http-core-experimental_2.11</artifactId>
+      <version>0.5</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.typesafe.akka</groupId>
+      <artifactId>akka-stream-experimental_2.11</artifactId>
+      <version>0.5</version>
+    </dependency>
     <dependency>
       <groupId>org.specs2</groupId>
       <artifactId>specs2_2.11</artifactId>
       <version>${specs2.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.spray</groupId>
-      <artifactId>spray-testkit_2.11</artifactId>
-      <version>${spray.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
