@@ -1,8 +1,9 @@
 package ai.spray.server
 
-import akka.actor.ActorSystem
+import ai.akka.actor.RequestProcessingActor
+import akka.actor.{ActorRef, ActorSystem, Props}
 import akka.http.Http
-import akka.http.model.{HttpResponse, StatusCodes}
+import akka.http.model.HttpResponse
 import akka.io.IO
 import akka.pattern._
 import akka.stream.scaladsl.Flow
@@ -26,12 +27,14 @@ object Main {
     val settings = MaterializerSettings()
     val materializer = FlowMaterializer(settings)
 
+    val requestProcesstingActor: ActorRef = system.actorOf(Props[RequestProcessingActor])
+
     val future: Future[Any] = IO(Http) ? Http.Bind(interface = "localhost", port = 8080)
     future.onSuccess({
       case serverBinding: Http.ServerBinding =>
         Flow(serverBinding.connectionStream).foreach(conn =>
           Flow(conn.requestPublisher)
-            .map(request => HttpResponse(status = StatusCodes.OK, entity = request.toString))
+            .mapFuture(request => (requestProcesstingActor ? request).mapTo[HttpResponse])
             .produceTo(materializer, conn.responseSubscriber)
         ).consume(materializer)
     })
