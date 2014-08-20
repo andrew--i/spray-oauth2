@@ -1,23 +1,19 @@
 package ai.akka.actor
 
-import ai.akka.actor.ClientDetailsServiceActor.{ClientDetails, LoadClientByClientId}
-import akka.actor.Actor
+import ai.akka.actor.ClientDetailsServiceActor.{ClientDetails, LoadClientByClientIdMessage}
 
 /**
  * Created by Андрей Смирнов on 20.08.2014.
  */
-class ClientDetailsServiceActor extends Actor {
+class ClientDetailsServiceActor extends OAuth2ServiceActor {
   override def receive: Receive = {
-    case LoadClientByClientId(clientId) => ClientDetails()
-    case _ =>
+    case LoadClientByClientIdMessage(clientId) => sender ! ClientDetails()
   }
-
-
 }
 
 object ClientDetailsServiceActor {
 
-  case class LoadClientByClientId(clientId: String)
+  case class LoadClientByClientIdMessage(clientId: String)
 
   case class ClientDetails()
 
