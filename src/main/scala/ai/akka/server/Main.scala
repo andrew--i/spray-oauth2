@@ -2,14 +2,15 @@ package ai.spray.server
 
 import akka.actor.ActorSystem
 import akka.http.Http
-import akka.http.model.{StatusCodes, HttpResponse}
+import akka.http.model.{HttpResponse, StatusCodes}
 import akka.io.IO
 import akka.pattern._
-import akka.stream.{MaterializerSettings, FlowMaterializer}
 import akka.stream.scaladsl.Flow
+import akka.stream.{FlowMaterializer, MaterializerSettings}
 import akka.util.Timeout
-import scala.concurrent.duration._
+
 import scala.concurrent.Future
+import scala.concurrent.duration._
 
 
 /**
@@ -17,7 +18,6 @@ import scala.concurrent.Future
  * Запуск провайдера
  */
 object Main {
-
 
   def main(args: Array[String]) {
     implicit val system = ActorSystem("sprayOAuth2System")
@@ -35,5 +35,8 @@ object Main {
             .produceTo(materializer, conn.responseSubscriber)
         ).consume(materializer)
     })
+    future.onFailure {
+      case e: Throwable => system.shutdown()
+    }
   }
 }
