@@ -3,6 +3,7 @@ package ai.akka.actor
 import ai.akka.actor.ClientDetailsServiceActor._
 import ai.akka.actor.OAuth2RequestFactoryActor.CreateAuthorizationRequestMessage
 import ai.akka.exception.Exception.OAuthParseRequestException
+import ai.akka.util.OAuth2Utils
 import ai.spray.oauth2.Constants
 import ai.spray.oauth2.model.AuthorizationRequest
 import akka.actor.ActorRef
@@ -23,7 +24,18 @@ class OAuth2RequestFactoryActor extends OAuth2ServiceActor {
       val eventualDetails: Future[ClientDetails] = (request.clientDetailsService ? LoadClientByClientIdMessage(request.clientId))
         .mapTo[ClientDetails]
       eventualDetails onComplete {
-        case Success(d: ClientDetails) => source ! AuthorizationRequest(request.clientId, Set.empty, Map.empty, Map.empty, "state", Set.empty, Set.empty, Set.empty, approved = false, request.redirectUri, Map.empty)
+        case Success(d: ClientDetails) => source ! AuthorizationRequest(
+          request.clientId,
+          request.scopes(d),
+          request.requestParameters,
+          Map.empty,
+          request.state,
+          Set.empty,
+          d.resourceIds,
+          d.authorities,
+          approved = false,
+          request.redirectUri,
+          Map.empty)
         case Failure(t: Throwable) => throw t
       }
   }
@@ -32,22 +44,28 @@ class OAuth2RequestFactoryActor extends OAuth2ServiceActor {
 object OAuth2RequestFactoryActor {
 
   case class CreateAuthorizationRequestMessage(request: HttpRequest, clientDetailsService: ActorRef) {
-    def clientId: String =
-      createRequestParamsMap(request).get(Constants.CLIENT_ID) match {
+
+    lazy val requestParameters: Map[String, String] = request.uri.query.toMap
+
+    lazy val clientId: String =
+      requestParameters.get(Constants.CLIENT_ID) match {
         case None => throw new OAuthParseRequestException(s"${Constants.CLIENT_ID} parameter does not found")
         case Some(x) => x
       }
 
-    def redirectUri: String =
-      createRequestParamsMap(request).get(Constants.REDIRECT_URI) match {
-        case Some(x) => x
-        case None => throw new OAuthParseRequestException(s"${Constants.REDIRECT_URI} parameter does not found")
-      }
+    lazy val redirectUri: String = requestParameters.getOrElse(Constants.REDIRECT_URI, null)
+
+    lazy val state: String = requestParameters.getOrElse(Constants.STATE, null)
+
+    def scopes(clientDetails: ClientDetails): Set[String] = {
+      val scopeInParameters: Set[String] = OAuth2Utils.parseParameterList(requestParameters.getOrElse(Constants.SCOPE, null))
+      if (scopeInParameters == null || scopeInParameters.isEmpty) {
+        clientDetails.scope
+      } else
+        scopeInParameters
+    }
+
   }
 
-  private def createRequestParamsMap(request: HttpRequest): Map[String, String] = {
-    require(request != null)
-    request.uri.query.toMap
-  }
 } 
 

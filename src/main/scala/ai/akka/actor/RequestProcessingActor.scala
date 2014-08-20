@@ -1,5 +1,6 @@
 package ai.akka.actor
 
+import ai.akka.actor.OAuth2RequestFactoryActor._
 import ai.spray.oauth2.model.AuthorizationRequest
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
@@ -41,8 +42,7 @@ class RequestProcessingActor extends OAuth2ServiceActor {
   def createResponse(request: HttpRequest): Future[HttpResponse] = {
     request match {
       case HttpRequest(HttpMethods.GET, Uri.Path("/oauth/authorize"), _, _, _) =>
-        val future: Future[AuthorizationRequest] = (oauth2RequestFactory ? OAuth2RequestFactoryActor.CreateAuthorizationRequestMessage(request, clientDetailsService)).mapTo[AuthorizationRequest]
-        Flow(future)
+        Flow((oauth2RequestFactory ? CreateAuthorizationRequestMessage(request, clientDetailsService)).mapTo[AuthorizationRequest])
           .map(r => HttpResponse(StatusCodes.OK, entity = r.toString))
           .toFuture(FlowMaterializer(MaterializerSettings()))
           .mapTo[HttpResponse]
