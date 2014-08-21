@@ -1,15 +1,22 @@
 package ai.akka.actor
 
 import ai.akka.actor.OAuth2RequestFactoryActor._
-import ai.spray.oauth2.model.AuthorizationRequest
+import ai.akka.exception.Exception.OAuthServiceException
+import ai.akka.oauth2.model.AuthorizationRequest
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
+import akka.http.model.ContentTypes._
+import akka.http.model.HttpEntity.Strict
 import akka.http.model._
+import akka.http.model.headers._
 import akka.pattern.ask
 import akka.stream.scaladsl.Flow
 import akka.stream.{FlowMaterializer, MaterializerSettings}
 
+import scala.collection.immutable
 import scala.concurrent.Future
+import scala.pickling._
+import scala.pickling.json.JSONPickleFormat
 import scala.util.{Failure, Success}
 
 /**
@@ -19,31 +26,40 @@ class RequestProcessingActor extends OAuth2ServiceActor {
 
   val clientDetailsService: ActorRef = context.actorOf(Props[ClientDetailsServiceActor])
   val oauth2RequestFactory: ActorRef = context.actorOf(Props[OAuth2RequestFactoryActor])
+  implicit val pickleFormat: JSONPickleFormat = new JSONPickleFormat
 
   override def receive: Receive = {
     case request: HttpRequest =>
       val source: ActorRef = sender()
-      val response: Future[HttpResponse] = createResponse(request)
+      val response: Future[HttpResponse] = createResponse(request, source)
       response onComplete {
         case Success(r: HttpResponse) => source ! r
         case Failure(e: Throwable) => source ! createInternalServerErrorResponse(e)
       }
-    case _ => createNotFountResponse()
+    case _ =>
+      val source: ActorRef = sender()
+      source ! createNotFountResponse()
+  }
+
+  def createResponseWithJSONContent(status: StatusCode, content: String): HttpResponse = {
+    val headers: immutable.Seq[`Content-Type`] = scala.collection.immutable.Seq(`Content-Type`(`application/json`))
+    val jsonFormattedString: String = content.pickle.value
+    HttpResponse(status, entity = jsonFormattedString, headers = headers)
   }
 
   def createInternalServerErrorResponse(e: Throwable): HttpResponse = {
-    HttpResponse(StatusCodes.InternalServerError, entity = e.getMessage)
+    createResponseWithJSONContent(StatusCodes.InternalServerError, e.getMessage)
   }
 
   def createNotFountResponse(): HttpResponse = {
-    HttpResponse(StatusCodes.NotFound, entity = "Unknown resource!")
+    createResponseWithJSONContent(StatusCodes.NotFound, "Unknown resource!")
   }
 
-  def createResponse(request: HttpRequest): Future[HttpResponse] = {
+  def createResponse(request: HttpRequest, httpResponseActorRef: ActorRef): Future[HttpResponse] = {
     request match {
       case HttpRequest(HttpMethods.GET, Uri.Path("/oauth/authorize"), _, _, _) =>
-        Flow((oauth2RequestFactory ? CreateAuthorizationRequestMessage(request, clientDetailsService)).mapTo[AuthorizationRequest])
-          .map(r => HttpResponse(StatusCodes.OK, entity = r.toString))
+        Flow((oauth2RequestFactory ? CreateAuthorizationRequestMessage(request, clientDetailsService, httpResponseActorRef)).mapTo[AuthorizationRequest])
+          .map(r => createResponseWithJSONContent(StatusCodes.OK, r.toString))
           .toFuture(FlowMaterializer(MaterializerSettings()))
           .mapTo[HttpResponse]
       case _ => Future(createNotFountResponse())
@@ -52,6 +68,8 @@ class RequestProcessingActor extends OAuth2ServiceActor {
 
   override val supervisorStrategy =
     OneForOneStrategy() {
+      case t: OAuthServiceException => t.httpResponseActor ! createInternalServerErrorResponse(t)
+        Restart
       case e: Throwable => Restart
     }
 }

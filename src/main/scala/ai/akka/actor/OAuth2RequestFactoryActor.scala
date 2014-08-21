@@ -2,10 +2,9 @@ package ai.akka.actor
 
 import ai.akka.actor.ClientDetailsServiceActor._
 import ai.akka.actor.OAuth2RequestFactoryActor.CreateAuthorizationRequestMessage
-import ai.akka.exception.Exception.OAuthParseRequestException
+import ai.akka.oauth2.Constants
+import ai.akka.oauth2.model.AuthorizationRequest
 import ai.akka.util.OAuth2Utils
-import ai.spray.oauth2.Constants
-import ai.spray.oauth2.model.AuthorizationRequest
 import akka.actor.ActorRef
 import akka.http.model.HttpRequest
 import akka.pattern.ask
@@ -43,13 +42,13 @@ class OAuth2RequestFactoryActor extends OAuth2ServiceActor {
 
 object OAuth2RequestFactoryActor {
 
-  case class CreateAuthorizationRequestMessage(request: HttpRequest, clientDetailsService: ActorRef) {
+  case class CreateAuthorizationRequestMessage(request: HttpRequest, clientDetailsService: ActorRef, httpResponseActor: ActorRef) {
 
     lazy val requestParameters: Map[String, String] = request.uri.query.toMap
 
     lazy val clientId: String =
       requestParameters.get(Constants.CLIENT_ID) match {
-        case None => throw new OAuthParseRequestException(s"${Constants.CLIENT_ID} parameter does not found")
+        case None => "1" // throw new OAuthParseRequestException(httpResponseActor, s"${Constants.CLIENT_ID} parameter does not found")
         case Some(x) => x
       }
 

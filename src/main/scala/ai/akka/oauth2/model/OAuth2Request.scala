@@ -1,6 +1,5 @@
-package ai.spray.oauth2.model
+package ai.akka.oauth2.model
 
-import ai.akka.actor.ClientDetailsServiceActor
 import ai.akka.actor.ClientDetailsServiceActor.GrantedAuthority
 
 /**
@@ -24,4 +23,5 @@ case class AuthorizationRequest(
                                  approved: Boolean,
                                  redirectUri: String,
                                  extensions: Map[String, String]) extends BaseRequest {
+
 }

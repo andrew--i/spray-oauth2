@@ -1,4 +1,4 @@
-package ai.spray.oauth2
+package ai.akka.oauth2
 
 /**
  * Created by Andrew on 10.08.2014.
