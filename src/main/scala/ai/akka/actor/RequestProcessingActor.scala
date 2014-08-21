@@ -6,7 +6,6 @@ import ai.akka.oauth2.model.AuthorizationRequest
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
 import akka.http.model.ContentTypes._
-import akka.http.model.HttpEntity.Strict
 import akka.http.model._
 import akka.http.model.headers._
 import akka.pattern.ask
@@ -15,18 +14,18 @@ import akka.stream.{FlowMaterializer, MaterializerSettings}
 
 import scala.collection.immutable
 import scala.concurrent.Future
-import scala.pickling._
-import scala.pickling.json.JSONPickleFormat
 import scala.util.{Failure, Success}
+import spray.json._
+import DefaultJsonProtocol._
 
 /**
  * Created by Андрей Смирнов on 20.08.2014.
  */
-class RequestProcessingActor extends OAuth2ServiceActor {
+class RequestProcessingActor extends OAuth2ServiceActor{
 
   val clientDetailsService: ActorRef = context.actorOf(Props[ClientDetailsServiceActor])
   val oauth2RequestFactory: ActorRef = context.actorOf(Props[OAuth2RequestFactoryActor])
-  implicit val pickleFormat: JSONPickleFormat = new JSONPickleFormat
+
 
   override def receive: Receive = {
     case request: HttpRequest =>
@@ -43,7 +42,7 @@ class RequestProcessingActor extends OAuth2ServiceActor {
 
   def createResponseWithJSONContent(status: StatusCode, content: String): HttpResponse = {
     val headers: immutable.Seq[`Content-Type`] = scala.collection.immutable.Seq(`Content-Type`(`application/json`))
-    val jsonFormattedString: String = content.pickle.value
+    val jsonFormattedString: String = content.toJson.prettyPrint
     HttpResponse(status, entity = jsonFormattedString, headers = headers)
   }
 

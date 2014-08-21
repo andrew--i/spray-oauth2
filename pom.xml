@@ -54,9 +54,9 @@
       <version>0.5</version>
     </dependency>
     <dependency>
-      <groupId>org.scala-lang</groupId>
-      <artifactId>scala-pickling_2.11</artifactId>
-      <version>0.8.0</version>
+      <groupId>com.netaporter</groupId>
+      <artifactId>spray-json_2.11</artifactId>
+      <version>1.2.7-NAP</version>
     </dependency>
     <dependency>
       <groupId>org.specs2</groupId>
