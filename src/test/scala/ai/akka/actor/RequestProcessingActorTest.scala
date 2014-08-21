@@ -7,7 +7,9 @@ import akka.util.Timeout
 import org.specs2.mutable.Specification
 import org.specs2.time.NoTimeConversions
 import spray.testkit.Specs2RouteTest
-
+import akka.http.model.headers._
+import akka.http.model.ContentTypes._
+import scala.collection.immutable.Seq
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
@@ -30,7 +32,8 @@ class RequestProcessingActorTest extends Specification with Specs2RouteTest with
 
     "return response with json content type" in {
       val response: HttpResponse = processRequestViaMessage("123")
-      response.headers.size must_== 1
+      val headers: Seq[HttpHeader] = response.headers
+      (headers.size must_== 1) and (headers(0) mustEqual `Content-Type`(`application/json`))
     }
 
     "handle not akka http requests" in {

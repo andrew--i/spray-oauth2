@@ -43,7 +43,7 @@ class RequestProcessingActor extends OAuth2ServiceActor{
   def createResponseWithJSONContent(status: StatusCode, content: String): HttpResponse = {
     val headers: immutable.Seq[`Content-Type`] = scala.collection.immutable.Seq(`Content-Type`(`application/json`))
     val jsonFormattedString: String = content.toJson.prettyPrint
-    HttpResponse(status, entity = jsonFormattedString, headers = headers)
+    HttpResponse(status, entity = HttpEntity(`application/json`, jsonFormattedString), headers = headers)
   }
 
   def createInternalServerErrorResponse(e: Throwable): HttpResponse = {
