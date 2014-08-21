@@ -2,6 +2,7 @@ package ai.akka.actor
 
 import ai.akka.actor.ClientDetailsServiceActor._
 import ai.akka.actor.OAuth2RequestFactoryActor.CreateAuthorizationRequestMessage
+import ai.akka.exception.Exception.OAuthParseRequestException
 import ai.akka.oauth2.Constants
 import ai.akka.oauth2.model.AuthorizationRequest
 import ai.akka.util.OAuth2Utils
@@ -48,7 +49,7 @@ object OAuth2RequestFactoryActor {
 
     lazy val clientId: String =
       requestParameters.get(Constants.CLIENT_ID) match {
-        case None => "1" // throw new OAuthParseRequestException(httpResponseActor, s"${Constants.CLIENT_ID} parameter does not found")
+        case None => throw new OAuthParseRequestException(httpResponseActor, s"${Constants.CLIENT_ID} parameter does not found")
         case Some(x) => x
       }
 
