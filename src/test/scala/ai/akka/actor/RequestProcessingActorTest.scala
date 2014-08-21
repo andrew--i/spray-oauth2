@@ -42,14 +42,14 @@ class RequestProcessingActorTest extends Specification with Specs2RouteTest with
 
     }
 
-//    "handle /oauth/authorize GET requests" in {
-//      val response: HttpResponse = processRequestViaMessage(HttpRequest(HttpMethods.GET, uri = "/oauth/authorize"))
-//      (response !== null) and (response.status must_==  StatusCodes.InternalServerError) and (response.entity must_== "hello world" )
-//    }
+    "handle /oauth/authorize GET requests" in {
+      val response: HttpResponse = processRequestViaMessage(HttpRequest(HttpMethods.GET, uri = "/oauth/authorize"))
+      response.status must_== StatusCodes.InternalServerError
+    }
 
     "handle /oauth/authorize GET requests with clientId" in {
-//      actorRef ! Get("/oauth/authorize?" + Constants.CLIENT_ID + "=1")
-      1 === 1
+      val response: HttpResponse = processRequestViaMessage(HttpRequest(HttpMethods.GET, uri = "/oauth/authorize?client_id=1"))
+      response.status must_== StatusCodes.OK
     }
 
   }

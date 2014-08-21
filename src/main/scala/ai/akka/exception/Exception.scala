@@ -16,4 +16,12 @@ object Exception {
     override def getMessage: String = msg
   }
 
+  case class UnsupportedResponseTypeException(httpResponseActor: ActorRef, msg: String) extends Throwable with OAuthServiceException {
+    override def getMessage: String = msg
+  }
+
+  case class InvalidClientException(httpResponseActor: ActorRef, msg: String) extends Throwable with OAuthServiceException {
+    override def getMessage: String = msg
+  }
+
 }

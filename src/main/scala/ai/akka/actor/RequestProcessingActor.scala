@@ -1,6 +1,7 @@
 package ai.akka.actor
 
 import ai.akka.actor.OAuth2RequestFactoryActor._
+import ai.akka.actor.OAuth2ValidateActor._
 import ai.akka.exception.Exception.OAuthServiceException
 import ai.akka.oauth2.model.AuthorizationRequest
 import akka.actor.SupervisorStrategy.Restart
@@ -21,11 +22,11 @@ import DefaultJsonProtocol._
 /**
  * Created by Андрей Смирнов on 20.08.2014.
  */
-class RequestProcessingActor extends OAuth2ServiceActor{
+class RequestProcessingActor extends OAuth2ServiceActor {
 
   val clientDetailsService: ActorRef = context.actorOf(Props[ClientDetailsServiceActor])
   val oauth2RequestFactory: ActorRef = context.actorOf(Props[OAuth2RequestFactoryActor])
-
+  val oauth2ValidateActor: ActorRef = context.actorOf(Props[OAuth2ValidateActor])
 
   override def receive: Receive = {
     case request: HttpRequest =>
@@ -58,6 +59,7 @@ class RequestProcessingActor extends OAuth2ServiceActor{
     request match {
       case HttpRequest(HttpMethods.GET, Uri.Path("/oauth/authorize"), _, _, _) =>
         Flow((oauth2RequestFactory ? CreateAuthorizationRequestMessage(request, clientDetailsService, httpResponseActorRef)).mapTo[AuthorizationRequest])
+          .mapFuture(r => (oauth2ValidateActor ? ValidateAuthorizationRequestMessage(r, httpResponseActorRef)).mapTo[AuthorizationRequest])
           .map(r => createResponseWithJSONContent(StatusCodes.OK, r.toString))
           .toFuture(FlowMaterializer(MaterializerSettings()))
           .mapTo[HttpResponse]

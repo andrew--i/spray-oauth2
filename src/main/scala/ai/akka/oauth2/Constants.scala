@@ -10,4 +10,7 @@ object Constants {
   final val STATE: String = "state"
   final val RESPONSE_TYPE: String = "response_type"
   final val SCOPE: String = "scope"
+  final val TOKEN_RESPONSE_TYPE: String = "token"
+  final val CODE_RESPONSE_TYPE: String = "code"
+
 }
