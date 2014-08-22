@@ -5,14 +5,14 @@ import ai.akka.actor.ClientDetailsServiceActor.{ClientDetails, LoadClientByClien
 /**
  * Created by Андрей Смирнов on 20.08.2014.
  */
-class ClientDetailsServiceActor extends OAuth2ServiceActor {
+trait ClientDetailsServiceActor extends OAuth2ServiceActor with ClientDetailsService {
   override def receive: Receive = {
     case LoadClientByClientIdMessage(clientId) => sender ! loadClientDetailsByClientId(clientId)
   }
+}
 
-  def loadClientDetailsByClientId(clientId: String): ClientDetails = {
-    ClientDetails(clientId)
-  }
+trait ClientDetailsService {
+  def loadClientDetailsByClientId(clientId: String): ClientDetails
 }
 
 object ClientDetailsServiceActor {

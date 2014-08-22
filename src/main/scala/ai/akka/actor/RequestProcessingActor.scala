@@ -4,6 +4,7 @@ import ai.akka.actor.OAuth2RequestFactoryActor._
 import ai.akka.actor.OAuth2ValidateActor._
 import ai.akka.exception.Exception.OAuthServiceException
 import ai.akka.oauth2.model.AuthorizationRequest
+import ai.akka.service.client.InMemoryClientDetailsService
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
 import akka.http.model.ContentTypes._
@@ -24,7 +25,9 @@ import DefaultJsonProtocol._
  */
 class RequestProcessingActor extends OAuth2ServiceActor {
 
-  val clientDetailsService: ActorRef = context.actorOf(Props[ClientDetailsServiceActor])
+  class InMemoryClientDetailsServiceActor extends ClientDetailsServiceActor with InMemoryClientDetailsService
+
+  val clientDetailsService: ActorRef = context.actorOf(Props[InMemoryClientDetailsServiceActor])
   val oauth2RequestFactory: ActorRef = context.actorOf(Props[OAuth2RequestFactoryActor])
   val oauth2ValidateActor: ActorRef = context.actorOf(Props[OAuth2ValidateActor])
 
