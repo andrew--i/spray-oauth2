@@ -8,30 +8,35 @@ import org.specs2.mutable.Specification
  */
 class InMemoryClientDetailsServiceTest extends Specification {
 
-  object InMemoryClientDetailsServiceForTest extends InMemoryClientDetailsService
+  class InMemoryClientDetailsServiceForTest extends InMemoryClientDetailsService
 
   "The InMemoryClientDetailsService" should {
     "register new client" in {
-      val client: ClientDetails = InMemoryClientDetailsServiceForTest.addClient(ClientDetails("1"))
+      val serviceForTest: InMemoryClientDetailsServiceForTest = new InMemoryClientDetailsServiceForTest()
+      val client: ClientDetails = serviceForTest.addClient(ClientDetails("1"))
       (client must not beNull) and (client.clientId must be equalTo  "1")
     }
 
     "return clientDetails if client has registration" in {
-      val client: ClientDetails = InMemoryClientDetailsServiceForTest.addClient(ClientDetails("1"))
-      InMemoryClientDetailsServiceForTest.findClientDetailsByClientId("1") must be equalTo client
+      val serviceForTest: InMemoryClientDetailsServiceForTest = new InMemoryClientDetailsServiceForTest()
+      val client: ClientDetails = serviceForTest.addClient(ClientDetails("1"))
+      serviceForTest.findClientDetailsByClientId("1") must be equalTo client
     }
 
     "throw exception if specified client did not find" in {
-      InMemoryClientDetailsServiceForTest.findClientDetailsByClientId("12") must throwA[IllegalArgumentException]
+      val serviceForTest: InMemoryClientDetailsServiceForTest = new InMemoryClientDetailsServiceForTest()
+      serviceForTest.findClientDetailsByClientId("12") must throwA[IllegalArgumentException]
     }
 
     "remove client" in {
-      val client: ClientDetails = InMemoryClientDetailsServiceForTest.addClient(ClientDetails("1"))
-      InMemoryClientDetailsServiceForTest.removeClient("1") must be equalTo client
+      val serviceForTest: InMemoryClientDetailsServiceForTest = new InMemoryClientDetailsServiceForTest()
+      val client: ClientDetails = serviceForTest.addClient(ClientDetails("1"))
+      serviceForTest.removeClient("1") must be equalTo client
     }
 
     "throw exception when tries remove client with no registration" in {
-      InMemoryClientDetailsServiceForTest.removeClient("1") must throwA[IllegalArgumentException]
+      val serviceForTest: InMemoryClientDetailsServiceForTest = new InMemoryClientDetailsServiceForTest()
+      serviceForTest.removeClient("1") must throwA[IllegalArgumentException]
     }
   }
 
