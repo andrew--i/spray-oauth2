@@ -7,5 +7,9 @@ import ai.akka.service.client.Model.ClientDetails
  */
 
 trait ClientDetailsService {
-  def loadClientDetailsByClientId(clientId: String): ClientDetails
+  def findClientDetailsByClientId(clientId: String): ClientDetails
+
+  def addClient(clientDetails: ClientDetails): ClientDetails
+
+  def removeClient(clientId: String): ClientDetails
 }

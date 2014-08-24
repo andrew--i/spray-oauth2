@@ -26,7 +26,11 @@ class ClientDetailsServiceActorTest  extends ActorTestWithFutureResponse {
 object ClientDetailsServiceActorTest {
 
   trait DumbClientDetailsService extends ClientDetailsService {
-    override def loadClientDetailsByClientId(clientId: String): ClientDetails = ClientDetails(clientId)
+    override def findClientDetailsByClientId(clientId: String): ClientDetails = ClientDetails(clientId)
+
+    override def addClient(clientDetails: ClientDetails): ClientDetails = clientDetails
+
+    override def removeClient(clientId: String): ClientDetails = findClientDetailsByClientId(clientId)
   }
 
   class DumbClientDetailsServiceActor extends ClientDetailsServiceActor with DumbClientDetailsService

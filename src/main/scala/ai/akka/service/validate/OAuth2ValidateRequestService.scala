@@ -11,8 +11,10 @@ import akka.actor.ActorRef
 trait OAuth2ValidateRequestService extends OAuth2ValidateService {
 
   def validateAuthorizationRequest(authorizationRequest: AuthorizationRequest, httpResponseActor: ActorRef): AuthorizationRequest = {
+    if(authorizationRequest == null)
+      throw new IllegalArgumentException("Authorization request did not specified")
     val responseTypes: Set[String] = authorizationRequest.responseTypes
-    if (!responseTypes.contains(Constants.TOKEN_RESPONSE_TYPE) && !responseTypes.contains(Constants.CODE_RESPONSE_TYPE))
+    if (responseTypes == null || !responseTypes.contains(Constants.TOKEN_RESPONSE_TYPE) && !responseTypes.contains(Constants.CODE_RESPONSE_TYPE))
       throw new UnsupportedResponseTypeException(httpResponseActor, "Unsupported response types: " + responseTypes)
     if (authorizationRequest.clientId == null || authorizationRequest.clientId.isEmpty)
       throw new InvalidClientException(httpResponseActor, "A client id must be provided")

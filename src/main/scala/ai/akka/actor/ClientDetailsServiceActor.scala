@@ -10,7 +10,7 @@ import ai.akka.service.client.ClientDetailsService
  */
 trait ClientDetailsServiceActor extends OAuth2ServiceActor with ClientDetailsService {
   override def receive: Receive = {
-    case LoadClientByClientIdMessage(clientId) => sender ! loadClientDetailsByClientId(clientId)
+    case LoadClientByClientIdMessage(clientId) => sender ! findClientDetailsByClientId(clientId)
   }
 }
 
