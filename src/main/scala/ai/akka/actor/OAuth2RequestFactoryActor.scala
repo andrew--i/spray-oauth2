@@ -5,6 +5,7 @@ import ai.akka.actor.OAuth2RequestFactoryActor.CreateAuthorizationRequestMessage
 import ai.akka.exception.Exception.OAuthParseRequestException
 import ai.akka.oauth2.Constants
 import ai.akka.oauth2.model.AuthorizationRequest
+import ai.akka.service.client.Model.ClientDetails
 import ai.akka.util.OAuth2Utils
 import akka.actor.ActorRef
 import akka.http.model.HttpRequest

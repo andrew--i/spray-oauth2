@@ -5,6 +5,7 @@ import ai.akka.actor.OAuth2ValidateActor._
 import ai.akka.exception.Exception.OAuthServiceException
 import ai.akka.oauth2.model.AuthorizationRequest
 import ai.akka.service.client.InMemoryClientDetailsService
+import ai.akka.service.validate.OAuth2ValidateRequestService
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
 import akka.http.model.ContentTypes._
@@ -13,23 +14,26 @@ import akka.http.model.headers._
 import akka.pattern.ask
 import akka.stream.scaladsl.Flow
 import akka.stream.{FlowMaterializer, MaterializerSettings}
+import spray.json.DefaultJsonProtocol._
+import spray.json._
 
 import scala.collection.immutable
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-import spray.json._
-import DefaultJsonProtocol._
 
 /**
  * Created by Андрей Смирнов on 20.08.2014.
  */
-class RequestProcessingActor extends OAuth2ServiceActor {
+
+
+class RequestProcessingActor() extends OAuth2ServiceActor {
 
   class InMemoryClientDetailsServiceActor extends ClientDetailsServiceActor with InMemoryClientDetailsService
+  class OAuth2ValidateRequestServiceActor extends OAuth2ValidateActor with OAuth2ValidateRequestService
 
-  val clientDetailsService: ActorRef = context.actorOf(Props[InMemoryClientDetailsServiceActor])
+  val clientDetailsService: ActorRef = context.actorOf(Props(new InMemoryClientDetailsServiceActor()))
+  val oauth2ValidateActor: ActorRef = context.actorOf(Props(new OAuth2ValidateRequestServiceActor()))
   val oauth2RequestFactory: ActorRef = context.actorOf(Props[OAuth2RequestFactoryActor])
-  val oauth2ValidateActor: ActorRef = context.actorOf(Props[OAuth2ValidateActor])
 
   override def receive: Receive = {
     case request: HttpRequest =>

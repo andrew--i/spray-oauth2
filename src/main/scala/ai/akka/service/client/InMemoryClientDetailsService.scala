@@ -1,7 +1,6 @@
 package ai.akka.service.client
 
-import ai.akka.actor.ClientDetailsService
-import ai.akka.actor.ClientDetailsServiceActor.ClientDetails
+import ai.akka.service.client.Model.ClientDetails
 
 /**
  * Created by Андрей Смирнов on 22.08.2014.

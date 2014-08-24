@@ -1,6 +1,6 @@
 package ai.akka.oauth2.model
 
-import ai.akka.actor.ClientDetailsServiceActor.GrantedAuthority
+import ai.akka.service.client.Model.GrantedAuthority
 
 /**
  * Created by Андрей Смирнов on 14.08.2014.
