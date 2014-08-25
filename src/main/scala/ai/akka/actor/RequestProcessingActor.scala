@@ -5,6 +5,7 @@ import ai.akka.actor.AuthenticationServiceActor.AuthenticateUserMessage
 import ai.akka.actor.OAuth2RequestFactoryActor._
 import ai.akka.actor.OAuth2ValidateActor._
 import ai.akka.exception.Exception.OAuthServiceException
+import ai.akka.oauth2.Constants
 import ai.akka.oauth2.model.AuthorizationRequest
 import ai.akka.service.approval.InMemoryApprovalService
 import ai.akka.service.authentication.Model.Authentication
@@ -77,12 +78,10 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
   def createResponse(request: HttpRequest, httpResponseActorRef: ActorRef): Future[HttpResponse] = {
     request match {
       case HttpRequest(HttpMethods.GET, Uri.Path("/oauth/authorize"), _, _, _) =>
-        val future: Future[(AuthorizationRequest, Authentication)] = for {r <- (oauth2RequestFactory ? CreateAuthorizationRequestMessage(request, clientDetailsService, httpResponseActorRef)).mapTo[AuthorizationRequest]
-                                                                          a <- (authenticationService ? AuthenticateUserMessage(request)).mapTo[Authentication]} yield (r, a)
-        Flow(future)
-          .mapFuture(r => for (req <- (oauth2ValidateActor ? ValidateAuthorizationRequestMessage(r._1, httpResponseActorRef)).mapTo[AuthorizationRequest]) yield (req, r._2))
-          .mapFuture(r => for (req <- (approvalService ? ApproveRequestMessage(r._1)).mapTo[AuthorizationRequest]) yield (req, r._2))
-          .map(r => createResponseWithJSONContent(StatusCodes.OK, r._1.toString))
+        Flow(createAuthorizationRequestAndUserAuthentication(request, httpResponseActorRef))
+          .mapFuture(context => validateContext(context))
+          .mapFuture(context => approveRequest(context))
+          .map(context => createResponse(context))
           .toFuture(FlowMaterializer(MaterializerSettings()))
           .mapTo[HttpResponse]
       case _ => Future(createNotFountResponse())
@@ -95,4 +94,50 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
         Restart
       case e: Throwable => Restart
     }
+
+  def createAuthorizationRequestAndUserAuthentication(request: HttpRequest, httpResponseActorRef: ActorRef): Future[RequestProcessingContext] = {
+    for {r <- (oauth2RequestFactory ? CreateAuthorizationRequestMessage(request, clientDetailsService, httpResponseActorRef)).mapTo[AuthorizationRequest]
+         a <- (authenticationService ? AuthenticateUserMessage(request)).mapTo[Authentication]}
+    yield RequestProcessingContext(r, a, httpResponseActorRef)
+  }
+
+  def validateContext(context: RequestProcessingContext): Future[RequestProcessingContext] = {
+    val message: ValidateAuthorizationRequestMessage = ValidateAuthorizationRequestMessage(context.authorizationRequest, context.userAuthentication, context.httpResponseActorRef)
+    for (req <- (oauth2ValidateActor ? message).mapTo[AuthorizationRequest])
+    yield RequestProcessingContext(req, context.userAuthentication, context.httpResponseActorRef)
+  }
+
+  def approveRequest(context: RequestProcessingContext): Future[RequestProcessingContext] = {
+    for (req <- (approvalService ? ApproveRequestMessage(context.authorizationRequest)).mapTo[AuthorizationRequest])
+    yield RequestProcessingContext(req, context.userAuthentication, context.httpResponseActorRef)
+  }
+
+  def createResponse(context: RequestProcessingContext): HttpResponse = {
+    val request: AuthorizationRequest = context.authorizationRequest
+    if (request.approved) {
+      if(request.responseTypes.contains(Constants.TOKEN_RESPONSE_TYPE))
+        return createImplicitGrandResponse(context)
+      if(request.responseTypes.contains(Constants.CODE_RESPONSE_TYPE))
+        return createAuthorizationCodeResponse(context)
+    }
+
+    createUserApprovalPageResponse(context)
+  }
+
+  def createUserApprovalPageResponse(context: RequestProcessingContext): HttpResponse = {
+    createResponseWithJSONContent(StatusCodes.OK, "response from createUserApprovalPageResponse")
+  }
+
+  def createImplicitGrandResponse(context: RequestProcessingContext): HttpResponse = {
+    createResponseWithJSONContent(StatusCodes.OK, "response from createImplicitGrandResponse")
+  }
+
+  def createAuthorizationCodeResponse(context: RequestProcessingContext): HttpResponse = {
+    createResponseWithJSONContent(StatusCodes.OK, "response from createAuthorizationCodeResponse")
+  }
 }
+
+
+case class RequestProcessingContext(authorizationRequest: AuthorizationRequest, userAuthentication: Authentication, httpResponseActorRef: ActorRef);
+
+

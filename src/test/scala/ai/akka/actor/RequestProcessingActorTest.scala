@@ -37,14 +37,14 @@ class RequestProcessingActorTest extends ActorTestWithFutureResponse {
       response.status must_== StatusCodes.InternalServerError
     }
 
-    class RequesrProcessingActorForTest extends RequestProcessingActor {
+    class RequestProcessingActorForTest extends RequestProcessingActor {
       override val clientDetailsService: ActorRef = context.actorOf(Props(new DumbClientDetailsServiceActor))
       override val oauth2ValidateActor: ActorRef = context.actorOf(Props(new SkipOAuth2RequestValidateServiceActor()))
     }
 
     "handle /oauth/authorize GET requests with clientId" in {
       val request: HttpRequest = HttpRequest(HttpMethods.GET, uri = "/oauth/authorize?client_id=1")
-      val response: HttpResponse = getResponseFromActor(TestActorRef(Props(new RequesrProcessingActorForTest())), request)
+      val response: HttpResponse = getResponseFromActor(TestActorRef(Props(new RequestProcessingActorForTest())), request)
       response.status must_== StatusCodes.OK
     }
 

@@ -7,7 +7,7 @@ import akka.actor.Actor.Receive
 import akka.actor.ActorRef
 
 /**
- * Created by Andrew on 24.08.2014.
+ * Actor for approval authorization request
  */
 trait ApprovalServiceActor extends OAuth2ServiceActor with ApprovalService {
   override def receive: Receive = {

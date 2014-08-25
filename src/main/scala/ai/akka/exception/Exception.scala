@@ -24,4 +24,9 @@ object Exception {
     override def getMessage: String = msg
   }
 
+  case class InvalidAuthenticationException(httpResponseActor: ActorRef, msg: String) extends Throwable with OAuthServiceException {
+    override def getMessage: String = msg
+  }
+
+
 }

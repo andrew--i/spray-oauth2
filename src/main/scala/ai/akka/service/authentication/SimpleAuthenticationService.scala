@@ -7,7 +7,7 @@ import akka.http.model.HttpRequest
  * Created by Andrew on 24.08.2014.
  */
 trait SimpleAuthenticationService extends AuthenticationService {
-  val anonymous: Authentication = Authentication("anonymous", isAuthenticated = false)
+  val anonymous: Authentication = Authentication("anonymous", isAuthenticated = true)
 
   override def authenticateUser(request: HttpRequest): Authentication = anonymous
 }
