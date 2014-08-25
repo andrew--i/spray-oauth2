@@ -1,10 +1,9 @@
 package ai.akka.service.approval
 
 import ai.akka.oauth2.model.AuthorizationRequest
-import ai.akka.service.approval.Model.Approval
 
 /**
- * Created by Andrew on 24.08.2014.
+ * Trait with implement in-memory storage for approvals
  */
 trait InMemoryApprovalService extends ApprovalService {
 

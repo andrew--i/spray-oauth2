@@ -4,7 +4,8 @@ import ai.akka.service.authentication.Model.Authentication
 import akka.http.model.HttpRequest
 
 /**
- * Created by Andrew on 24.08.2014.
+ * Trait of simple authentication,
+ * All users are anonymous
  */
 trait SimpleAuthenticationService extends AuthenticationService {
   val anonymous: Authentication = Authentication("anonymous", isAuthenticated = true)

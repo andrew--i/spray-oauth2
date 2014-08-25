@@ -7,7 +7,7 @@ import ai.akka.service.validate.OAuth2ValidateService
 import akka.actor.ActorRef
 
 /**
- * Created by Andrew on 21.08.2014.
+ * Actor for validating authorization request and user authentication
  */
 trait OAuth2ValidateActor extends OAuth2ServiceActor with OAuth2ValidateService{
   override def receive: Receive = {
@@ -18,5 +18,12 @@ trait OAuth2ValidateActor extends OAuth2ServiceActor with OAuth2ValidateService{
 }
 
 object OAuth2ValidateActor {
+
+  /**
+   * Message for OAuth2ValidateActor
+   * @param authorizationRequest request for validation
+   * @param authentication authentication for validation
+   * @param httpResponseActor reference to actor which waiting http response
+   */
   case class ValidateAuthorizationRequestMessage(authorizationRequest: AuthorizationRequest, authentication:Authentication, httpResponseActor: ActorRef)
 }

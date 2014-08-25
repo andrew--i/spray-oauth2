@@ -7,7 +7,7 @@ import akka.actor.Actor.Receive
 import akka.actor.ActorRef
 
 /**
- * Actor for approval authorization request
+ * Actor for approve authorization request
  */
 trait ApprovalServiceActor extends OAuth2ServiceActor with ApprovalService {
   override def receive: Receive = {
@@ -20,6 +20,10 @@ trait ApprovalServiceActor extends OAuth2ServiceActor with ApprovalService {
 
 object ApprovalServiceActor {
 
+  /**
+   * Message for ApprovalServiceActor
+   * @param request request for approve
+   */
   case class ApproveRequestMessage(request: AuthorizationRequest)
 
 }

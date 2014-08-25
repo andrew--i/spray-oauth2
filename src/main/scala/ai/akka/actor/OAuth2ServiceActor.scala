@@ -7,7 +7,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 /**
- * Created by Андрей Смирнов on 20.08.2014.
+ * Trait which encapsulates execution context and time out for futures
  */
 trait OAuth2ServiceActor extends Actor {
   implicit val ec: ExecutionContext = context.dispatcher

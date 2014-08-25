@@ -7,7 +7,7 @@ import akka.actor.ActorRef
 import akka.http.model.HttpRequest
 
 /**
- * Created by Andrew on 24.08.2014.
+ * Actor for authenticate user
  */
 trait AuthenticationServiceActor extends OAuth2ServiceActor with AuthenticationService {
   override def receive: Receive = {
@@ -19,5 +19,9 @@ trait AuthenticationServiceActor extends OAuth2ServiceActor with AuthenticationS
 
 object AuthenticationServiceActor {
 
+  /**
+   * Message for AuthenticationServiceActor
+   * @param request information about request
+   */
   case class AuthenticateUserMessage(request: HttpRequest)
 }

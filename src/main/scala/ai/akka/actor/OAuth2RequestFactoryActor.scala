@@ -15,7 +15,7 @@ import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 /**
- * Created by Андрей Смирнов on 20.08.2014.
+ * Actor for creating AuthorizationRequest model
  */
 class OAuth2RequestFactoryActor extends OAuth2ServiceActor {
 
@@ -44,20 +44,43 @@ class OAuth2RequestFactoryActor extends OAuth2ServiceActor {
 
 object OAuth2RequestFactoryActor {
 
+  /**
+   * Message for OAuth2RequestFactoryActor
+   * @param request information about request
+   * @param clientDetailsService reference to actor for dealing with client details
+   * @param httpResponseActor reference to actor which waiting http response
+   */
   case class CreateAuthorizationRequestMessage(request: HttpRequest, clientDetailsService: ActorRef, httpResponseActor: ActorRef) {
 
+    /**
+     * query parameters of request
+     */
     lazy val requestParameters: Map[String, String] = request.uri.query.toMap
 
+    /**
+     * client identity
+     */
     lazy val clientId: String =
       requestParameters.get(Constants.CLIENT_ID) match {
         case None => throw new OAuthParseRequestException(httpResponseActor, s"${Constants.CLIENT_ID} parameter does not found")
         case Some(x) => x
       }
 
+    /**
+     * redirect uri of client
+     */
     lazy val redirectUri: String = requestParameters.getOrElse(Constants.REDIRECT_URI, null)
 
+    /**
+     * state
+     */
     lazy val state: String = requestParameters.getOrElse(Constants.STATE, null)
 
+    /**
+     * scopes
+     * @param clientDetails client information
+     * @return set of scopes
+     */
     def scopes(clientDetails: ClientDetails): Set[String] = {
       val scopeInParameters: Set[String] = OAuth2Utils.parseParameterList(requestParameters.getOrElse(Constants.SCOPE, null))
       if (scopeInParameters == null || scopeInParameters.isEmpty) {

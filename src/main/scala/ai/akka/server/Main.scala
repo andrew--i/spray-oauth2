@@ -15,12 +15,9 @@ import scala.concurrent.duration._
 
 
 /**
- * Created by Andrew on 06.08.2014.
- * Запуск провайдера
+ * Main object. it starts oauth2 provider
  */
 object Main {
-
-
 
   def main(args: Array[String]) {
     implicit val system = ActorSystem("sprayOAuth2System")

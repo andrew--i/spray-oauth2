@@ -6,7 +6,7 @@ import ai.akka.service.client.ClientDetailsService
 
 
 /**
- * Created by Андрей Смирнов on 20.08.2014.
+ * Actor for dealing with client details
  */
 trait ClientDetailsServiceActor extends OAuth2ServiceActor with ClientDetailsService {
   override def receive: Receive = {
@@ -15,5 +15,10 @@ trait ClientDetailsServiceActor extends OAuth2ServiceActor with ClientDetailsSer
 }
 
 object ClientDetailsServiceActor {
+
+  /**
+   * Message for ClientDetailsServiceActor which load client details by clientId
+   * @param clientId identity of client
+   */
   case class LoadClientByClientIdMessage(clientId: String)
 }

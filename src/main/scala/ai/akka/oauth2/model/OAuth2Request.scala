@@ -3,7 +3,7 @@ package ai.akka.oauth2.model
 import ai.akka.service.client.Model.GrantedAuthority
 
 /**
- * Created by Андрей Смирнов on 14.08.2014.
+ * Trait with common information about request
  */
 trait BaseRequest {
   val clientId: String
@@ -11,6 +11,20 @@ trait BaseRequest {
   val requestParameters: Map[String, String]
 }
 
+/**
+ * Information about authorization request (request to authorization-endpoint)
+ * @param clientId client identity
+ * @param scope set of required scopes
+ * @param requestParameters parameters of request
+ * @param approvalParameters approval parameters
+ * @param state state
+ * @param responseTypes response types
+ * @param resourceIds set of identity of resource for access
+ * @param authorities authorities of user
+ * @param approved is request approved
+ * @param redirectUri redirect uri
+ * @param extensions extension of request
+ */
 case class AuthorizationRequest(
                                  clientId: String,
                                  scope: Set[String],

@@ -1,10 +1,22 @@
 package ai.akka.service.client
 
-/**
- * Created by andrew on 23.08.14.
- */
+
 object Model {
 
+  /**
+   * Information about client
+   * @param clientId client identity
+   * @param clientSecret client secret
+   * @param scope scopes of client
+   * @param resourceIds identity of resources
+   * @param authorizedGrantTypes registered authorization grand types
+   * @param registeredRedirectUris registered redirect uri-s
+   * @param autoApproveScopes scopes with auto approved
+   * @param authorities client authorities
+   * @param accessTokenValiditySeconds  the access token validity period for this client
+   * @param refreshTokenValiditySeconds the refresh token validity period for this client
+   * @param additionalInformation additional client info
+   */
   case class ClientDetails(
                             clientId: String,
                             clientSecret: String,
@@ -24,6 +36,10 @@ object Model {
     }
   }
 
+  /**
+   * Model of authority
+   * @param authority name of authority
+   */
   case class GrantedAuthority(authority: String)
 
 }

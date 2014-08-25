@@ -7,10 +7,17 @@ import ai.akka.service.authentication.Model.Authentication
 import akka.actor.ActorRef
 
 /**
- * Created by andrew on 23.08.14.
+ * Trait of implementation validation service
  */
 trait OAuth2ValidateRequestService extends OAuth2ValidateService {
 
+  /**
+   * @see(ai.akka.service.validate.OAuth2ValidateService)
+   * @param authorizationRequest authorization request
+   * @param authentication authentication
+   * @param httpResponseActor regerence to actor with waiting http response
+   * @return authorization request
+   */
   def validateAuthorizationRequest(authorizationRequest: AuthorizationRequest, authentication: Authentication, httpResponseActor: ActorRef): AuthorizationRequest = {
     if (authorizationRequest == null)
       throw new IllegalArgumentException("Authorization request did not specified")

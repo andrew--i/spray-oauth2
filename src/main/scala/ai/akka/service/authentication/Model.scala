@@ -5,6 +5,11 @@ package ai.akka.service.authentication
  */
 object Model {
 
+  /**
+   * Authentication information
+   * @param name user name
+   * @param isAuthenticated is user authenticated
+   */
   case class Authentication(name: String, isAuthenticated: Boolean)
 
 }

@@ -1,8 +1,7 @@
 package ai.akka.oauth2
 
 /**
- * Created by Andrew on 10.08.2014.
- * Константы искользуемые в разборе OAuth2 запросах
+ * Constants
  */
 object Constants {
   final val REDIRECT_URI: String = "redirect_uri"

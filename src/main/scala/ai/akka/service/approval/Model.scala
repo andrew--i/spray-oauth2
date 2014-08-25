@@ -4,11 +4,18 @@ import java.util.Date
 
 import ai.akka.service.approval.Model.ApprovalStatus.ApprovalStatus
 
-/**
- * Created by Andrew on 24.08.2014.
- */
+
 object Model {
 
+  /**
+   * Information about approval
+   * @param userId user identity
+   * @param clientId client identiry
+   * @param scope scope
+   * @param status status of approval
+   * @param expiresAt date and time when approval expires
+   * @param lastUpdatedAt date and time when approval has updated
+   */
   case class Approval(
                        userId: String,
                        clientId: String,
@@ -17,6 +24,9 @@ object Model {
                        expiresAt: Date,
                        lastUpdatedAt: Date)
 
+  /**
+   * Enumeration of approval status
+   */
   object ApprovalStatus extends Enumeration {
     type ApprovalStatus = Value
     val APPROVED, DENIED = Value
