@@ -2,7 +2,6 @@ package ai.akka.actor
 
 import ai.akka.actor.AuthenticationServiceActor.AuthenticateUserMessage
 import ai.akka.service.authentication.AuthenticationService
-import akka.actor.Actor.Receive
 import akka.actor.ActorRef
 import akka.http.model.HttpRequest
 

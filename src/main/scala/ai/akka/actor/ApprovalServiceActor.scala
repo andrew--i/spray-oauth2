@@ -3,7 +3,6 @@ package ai.akka.actor
 import ai.akka.actor.ApprovalServiceActor.ApproveRequestMessage
 import ai.akka.oauth2.model.AuthorizationRequest
 import ai.akka.service.approval.ApprovalService
-import akka.actor.Actor.Receive
 import akka.actor.ActorRef
 
 /**

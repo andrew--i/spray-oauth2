@@ -186,7 +186,7 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
     val request: AuthorizationRequest = context.authorizationRequest
     if (request.approved) {
       if (request.responseTypes.contains(Constants.TOKEN_RESPONSE_TYPE))
-        return createImplicitGrandResponse(context)
+        return createImplicitGrantResponse(context)
       if (request.responseTypes.contains(Constants.CODE_RESPONSE_TYPE))
         return createAuthorizationCodeResponse(context)
     }
@@ -204,16 +204,16 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
   }
 
   /**
-   * Create response for implicit grand type
+   * Create response for implicit grant type
    * @param context request processing context
    * @return http response
    */
-  def createImplicitGrandResponse(context: RequestProcessingContext): HttpResponse = {
-    createResponseWithJSONContent(StatusCodes.OK, "response from createImplicitGrandResponse")
+  def createImplicitGrantResponse(context: RequestProcessingContext): HttpResponse = {
+    createResponseWithJSONContent(StatusCodes.OK, "response from createImplicitGrantResponse")
   }
 
   /**
-   * Create response for authorization code grand type
+   * Create response for authorization code grant type
    * @param context request processing context
    * @return http response
    */

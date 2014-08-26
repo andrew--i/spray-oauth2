@@ -9,7 +9,7 @@ object Model {
    * @param clientSecret client secret
    * @param scope scopes of client
    * @param resourceIds identity of resources
-   * @param authorizedGrantTypes registered authorization grand types
+   * @param authorizedGrantTypes registered authorization grant types
    * @param registeredRedirectUris registered redirect uri-s
    * @param autoApproveScopes scopes with auto approved
    * @param authorities client authorities
