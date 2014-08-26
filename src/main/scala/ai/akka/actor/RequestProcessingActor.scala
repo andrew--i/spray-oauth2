@@ -6,6 +6,7 @@ import ai.akka.actor.OAuth2RequestFactoryActor._
 import ai.akka.actor.OAuth2ValidateActor._
 import ai.akka.exception.Exception.OAuthServiceException
 import ai.akka.oauth2.Constants
+import ai.akka.oauth2.Exception.OAuth2Exception
 import ai.akka.oauth2.model.AuthorizationRequest
 import ai.akka.service.approval.InMemoryApprovalService
 import ai.akka.service.authentication.Model.Authentication
@@ -115,6 +116,25 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
     createResponseWithJSONContent(StatusCodes.NotFound, "Unknown resource!")
   }
 
+  def createOAuth2ErrorResponse(authorizationRequest: AuthorizationRequest, failure: OAuth2Exception): HttpResponse = {
+    var query: Map[String, String] = Map("error" -> failure.getOAuth2ErrorCode, "error_description" -> failure.msg)
+    if (authorizationRequest.state != null)
+      query = query + ("state" -> authorizationRequest.state)
+    if (failure.additionalInformation != null)
+      query = query ++ failure.additionalInformation
+
+    var uri: Uri = Uri(authorizationRequest.redirectUri)
+    if (authorizationRequest.isContainsTokenResponseType) {
+      // добавляем во фрагмент
+      uri = uri.withFragment(query.collect { case (k: String, v: String) => k + "=" + v}.mkString("&"))
+    } else {
+      //добавляем в query
+      uri = uri.withQuery(query)
+    }
+
+    HttpResponse(StatusCodes.Found, headers = scala.collection.immutable.Seq(Location(uri)))
+  }
+
   /**
    * Create response future by request
    * @param request request
@@ -130,7 +150,8 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
           .map(context => createResponse(context))
           .toFuture(FlowMaterializer(MaterializerSettings()))
           .mapTo[HttpResponse]
-      case _ => Future(createNotFountResponse())
+      case _ =>
+        Future(createNotFountResponse())
     }
   }
 
@@ -185,9 +206,9 @@ class RequestProcessingActor() extends OAuth2ServiceActor {
   def createResponse(context: RequestProcessingContext): HttpResponse = {
     val request: AuthorizationRequest = context.authorizationRequest
     if (request.approved) {
-      if (request.responseTypes.contains(Constants.TOKEN_RESPONSE_TYPE))
+      if (request.isContainsTokenResponseType)
         return createImplicitGrantResponse(context)
-      if (request.responseTypes.contains(Constants.CODE_RESPONSE_TYPE))
+      if (request.isContainsCodeResponseType)
         return createAuthorizationCodeResponse(context)
     }
 

@@ -27,6 +27,8 @@ object Exception {
     def getOAuth2ErrorCode: String
 
     def getHttpErrorCode: StatusCode = StatusCodes.BadRequest
+
+    def msg:String
   }
 
   def apply(errorCode: String, errorMessage: String): OAuth2Exception = {

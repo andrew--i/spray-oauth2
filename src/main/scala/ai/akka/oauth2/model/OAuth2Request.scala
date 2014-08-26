@@ -1,5 +1,6 @@
 package ai.akka.oauth2.model
 
+import ai.akka.oauth2.Constants
 import ai.akka.service.client.Model.GrantedAuthority
 
 /**
@@ -37,5 +38,9 @@ case class AuthorizationRequest(
                                  approved: Boolean,
                                  redirectUri: String,
                                  extensions: Map[String, String]) extends BaseRequest {
+
+  def isContainsTokenResponseType: Boolean = if (responseTypes == null) false else responseTypes.contains(Constants.TOKEN_RESPONSE_TYPE)
+
+  def isContainsCodeResponseType: Boolean = if (responseTypes == null) false else responseTypes.contains(Constants.CODE_RESPONSE_TYPE)
 
 }
